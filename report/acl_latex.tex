@@ -263,10 +263,6 @@ A full robustness study (different platforms, dialects, or time periods) is left
 We compared a CNN-LSTM on BPE subword sequences against eight classical baselines for 50-author Twitter attribution.
 The neural ensemble (63.8\% accuracy, 0.640 macro-F$_1$) is competitive but slightly below character $n$-grams + SVM (66.2\%, 0.657).
 SHAP/LIME highlight morphological fragments and punctuation; errors cluster where authors' surface styles overlap.
-<<<<<<< HEAD
-Answering our questions directly: \textbf{(RQ1)} the subword CNN-LSTM does learn stable author representations, reaching 0.640 macro-F$_1$ across all 50 authors; \textbf{(RQ2)} under the shared stratified split it is competitive with, but does not beat, the strongest classical feature (character $n$-grams + SVM, 0.657); and \textbf{(RQ3)} correct decisions hinge on orthographic and morphological subword cues (casing, punctuation, stable BPE fragments), while systematic confusions concentrate among authors with overlapping post length and topical vocabulary.
-=======
->>>>>>> 520ef946993df07b9ed58b417b0deb9cfc9e205a
 
 \textbf{Limitations:} Single English Twitter slice; closed-set labels; SHAP cost limits large-scale explanation; moderate data per author (200 posts) favours sample-efficient sparse features.
 

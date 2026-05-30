@@ -1,0 +1,44 @@
+# Local virtual environment (see README for setup)
+.venv/
+
+# Python bytecode / caches
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# pytest (root cache dir and legacy temp cache folders)
+.pytest_cache/
+**/.pytest_cache/
+pytest-cache-files-*
+
+# Coverage
+.coverage
+htmlcov/
+
+# Hypothesis (property test examples DB / cache)
+.hypothesis/
+
+# Runtime outputs (keep directory placeholders only)
+artifacts/runs/*
+!artifacts/runs/.gitkeep
+artifacts/checkpoints/*
+!artifacts/checkpoints/.gitkeep
+artifacts/tokeniser.json
+
+# Promoted best bundle is shipped as a deliverable (loadable checkpoint)
+artifacts/best_model_bundle/*
+!artifacts/best_model_bundle/.gitkeep
+!artifacts/best_model_bundle/model.pt
+!artifacts/best_model_bundle/tokeniser.json
+!artifacts/best_model_bundle/training.json
+
+# Aggregated metrics are shipped (results referenced in the report)
+results/*
+!results/.gitkeep
+!results/metrics.json
+
+# Downloaded dataset (fetch with --fetch-dataset)
+data/AuthorIdentification/

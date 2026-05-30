@@ -1,0 +1,5 @@
+# Keep directory in repo; ignore downloaded CSVs and full git clone
+*.csv
+*.json
+AuthorIdentification/
+!.gitkeep

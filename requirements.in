@@ -1,0 +1,15 @@
+# Unpinned dependency list. Install with: pip install -r requirements.in
+# After installing, lock for reproducibility: pip freeze > requirements-locked.txt
+# (see README for when and how)
+
+torch
+tokenizers
+scikit-learn
+numpy
+pandas
+matplotlib
+shap
+lime
+hypothesis
+pytest
+tensorboard

@@ -1,0 +1,73 @@
+\begin{thebibliography}{9}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Dr{\v{z}}\'ik and Kapusta(2026)}]{drzik2026morphology}
+M.~Dr{\v{z}}\'ik and J.~Kapusta. 2026.
+\newblock The importance of morphology-aware subword tokenization for {NLP}
+  tasks in {S}lovak language modeling.
+\newblock \emph{Journal of Slovak Linguistic Research}.
+
+\bibitem[{Hossain(2025)}]{hossain2025authornet}
+Md~Sarwar Hossain. 2025.
+\newblock {AuthorNet}: Leveraging attention-based early fusion of transformers
+  for low-resource authorship attribution.
+\newblock In \emph{Proceedings of the 2025 Conference on Empirical Methods in
+  Natural Language Processing}.
+
+\bibitem[{Modupe et~al.(2022{\natexlab{a}})Modupe, Celik, Marivate, and
+  Olugbara}]{modupe2022applied}
+Abiodun Modupe, Turgay Celik, Vukosi Marivate, and Oludayo~O. Olugbara.
+  2022{\natexlab{a}}.
+\newblock \href {https://doi.org/10.3390/app12157518} {Post-authorship
+  attribution using regularized deep neural network}.
+\newblock \emph{Applied Sciences}, 12(15):7518.
+
+\bibitem[{Modupe et~al.(2022{\natexlab{b}})Modupe, Olugbara, and
+  Lall}]{modupe2022subword}
+Abiodun Modupe, Oludayo~O. Olugbara, and M.~Lall. 2022{\natexlab{b}}.
+\newblock Subword embedding for authorship attribution of micro-messages.
+\newblock \emph{International Journal of Advanced Computer Science and
+  Applications}.
+
+\bibitem[{Modupe et~al.(2022{\natexlab{c}})Modupe, Celik, Marivate, and
+  Olugbara}]{modupe2022post}
+Abiodun~A. Modupe, Turgay Celik, Vukosi Marivate, and Oludayo~O. Olugbara.
+  2022{\natexlab{c}}.
+\newblock \href {https://doi.org/10.3390/app12157518} {Post-authorship
+  attribution using regularized deep neural network}.
+\newblock \emph{Applied Sciences}, 12(15):7518.
+
+\bibitem[{Sennrich et~al.(2016)Sennrich, Haddow, and
+  Birch}]{sennrich2016neural}
+Rico Sennrich, Barry Haddow, and Alexandra Birch. 2016.
+\newblock Neural machine translation of rare words with subword units.
+\newblock In \emph{Proceedings of the 54th Annual Meeting of the Association
+  for Computational Linguistics (Volume 1: Long Papers)}, pages 1715--1725,
+  Berlin, Germany. Association for Computational Linguistics.
+
+\bibitem[{Suman et~al.(2021)Suman, Raj, Saha, and
+  Bhattacharyya}]{suman2021authorship}
+Chanchal Suman, Ayush Raj, Sriparna Saha, and Pushpak Bhattacharyya. 2021.
+\newblock \href {https://doi.org/10.1109/TCSS.2021.3067736} {Authorship
+  attribution of microtext using capsule networks}.
+\newblock \emph{{IEEE} Transactions on Computational Social Systems},
+  9(4):1038--1047.
+
+\bibitem[{Theophilo et~al.(2021)Theophilo, Giot, and
+  Rocha}]{theophilo2021authorship}
+Antonio Theophilo, Romain Giot, and Anderson Rocha. 2021.
+\newblock \href {https://doi.org/10.1109/TCSS.2021.3123895} {Authorship
+  attribution of social media messages}.
+\newblock \emph{{IEEE} Transactions on Computational Social Systems},
+  10(1):10--23.
+
+\bibitem[{Toraman et~al.(2023)Toraman, Yilmaz, Sahinuc, and
+  Ozcelik}]{toraman2023tokenization}
+{\c{C}}a{\u{g}}r{\i} Toraman, Eyup~Halit Yilmaz, Furkan Sahinuc, and Oguzhan
+  Ozcelik. 2023.
+\newblock \href {https://doi.org/10.1145/3578707} {Impact of tokenization on
+  language models: An analysis for {T}urkish}.
+\newblock \emph{ACM Transactions on Asian and Low-Resource Language Information
+  Processing}, 22(4):1--21.
+
+\end{thebibliography}

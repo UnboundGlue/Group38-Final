@@ -102,10 +102,15 @@ def suggest_batch_size(
 
 
 def suggest_num_workers() -> int:
-    """Background workers for DataLoader (0 on single-core, capped for Windows I/O)."""
-    n = os.cpu_count() or 4
+    """Background workers for :class:`~torch.utils.data.DataLoader`.
+
+    On Windows returns **0**: ``spawn`` workers re-import the training script (and
+    SciPy/sklearn), which often raises ``MemoryError`` or ``worker exited unexpectedly``
+    after long GPU runs when host RAM is tight. Linux/macOS use a capped worker count.
+    """
     if sys.platform == "win32":
-        return max(0, min(4, n - 1))
+        return 0
+    n = os.cpu_count() or 4
     return max(0, min(8, n - 1))
 
 

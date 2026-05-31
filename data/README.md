@@ -23,7 +23,7 @@ python data/fetch_dataset.py
 
 This checks for `data/AuthorIdentification/Dataset/` with CSV files. If they are missing, it **shallow-clones** that GitHub repository into `data/AuthorIdentification/`. You need **Git** installed and on your `PATH`.
 
-Experiments also accept `--fetch-dataset` when the `--dataset` path is not present yet.
+Run this before `experiments.run_cnn_lstm`, `run_baselines`, or `load_cnn_checkpoint` (see the project [`README.md`](../README.md)).
 
 Options:
 

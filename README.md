@@ -48,17 +48,44 @@ A trained, loadable checkpoint ships under [`artifacts/best_model_bundle/`](arti
 
 ## Quick start
 
-**Requirements:** Python **3.10+**, Git on `PATH` (for `--fetch-dataset`).
+**Requirements:** Python **3.10+** (3.11–3.12 recommended; 3.14 works with the CUDA step below), Git on `PATH` (to download the dataset). For GPU training you also need an **NVIDIA GPU** with a working driver (`nvidia-smi` should list your card).
 
 ```powershell
 # From this folder (repository root)
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1   # required before every experiment command
 python -m pip install --upgrade pip
 pip install -r requirements.in
 ```
 
+If you skip activation, `python` may point at `C:\Python314\python.exe` with **CPU-only** torch even after installing CUDA in `.venv`.
+
 **macOS / Linux:** use `source .venv/bin/activate` instead of the PowerShell activate line.
+
+### GPU / CUDA PyTorch (required for neural training)
+
+`requirements.in` lists plain `torch`, which **pip installs from PyPI as a CPU-only build** on many Windows setups. That is enough for baselines and tests, but **`run_cnn_lstm` will log `Using device: cpu`** unless you install a CUDA wheel.
+
+If you have NVIDIA hardware, run this **after** `pip install -r requirements.in`:
+
+```powershell
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+```
+
+Then **check** that PyTorch sees the GPU (version should contain `+cu128`, not `+cpu`):
+
+```powershell
+python -c "import torch; print('torch', torch.__version__); print('cuda build', torch.version.cuda); print('cuda available', torch.cuda.is_available()); print('device', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'none')"
+```
+
+When training starts, the log should say **`Using device: cuda`** and your GPU name. If you still see `cpu`, uninstall the CPU wheel and reinstall from the index above:
+
+```powershell
+pip uninstall torch torchvision torchaudio -y
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+```
+
+Other CUDA versions (e.g. `cu124`) may not publish wheels for your Python version; see [pytorch.org/get-started/locally](https://pytorch.org/get-started/locally/) if `cu128` fails. CPU-only training of the full 3-seed ensemble is impractically slow.
 
 For a pinned environment after a successful install:
 
@@ -67,18 +94,30 @@ pip freeze > requirements-locked.txt
 pip install -r requirements-locked.txt   # on another machine
 ```
 
+Re-run the CUDA install step on the new machine if the lockfile captured a CPU-only `torch`.
+
+---
+
+## Download dataset
+
+The default dataset is the Chanchal **50 authors × 200 tweets** slice (`DEFAULT_CHANCHAL_200_CSV` in `src/dataset.py`). Download it **once** before any experiment:
+
+```bash
+python data/fetch_dataset.py
+```
+
+This shallow-clones [AuthorIdentification](https://github.com/chanchalIITP/AuthorIdentification) into `data/AuthorIdentification/` when CSVs are not already present. See [`data/README.md`](data/README.md) for `--output` and `--force`.
+
 ---
 
 ## Run experiments
 
-All commands assume the **current directory is this repository root** (the folder containing `src/`, `experiments/`, and `tests/`).
+All commands below assume the **current directory is this repository root** (the folder containing `src/`, `experiments/`, and `tests/`), that **`.venv` is activated** (`(.venv)` in your prompt), and that the dataset has been downloaded.
 
-### 1. Fetch data and train CNN–LSTM
-
-The default dataset is the Chanchal **50 authors × 200 tweets** slice (`DEFAULT_CHANCHAL_200_CSV` in `src/dataset.py`). If the CSV is missing locally, add `--fetch-dataset` to shallow-clone [AuthorIdentification](https://github.com/chanchalIITP/AuthorIdentification) into `data/AuthorIdentification/`.
+### 1. Train CNN–LSTM
 
 ```bash
-python -m experiments.run_cnn_lstm --fetch-dataset
+python -m experiments.run_cnn_lstm
 ```
 
 **Reported ensemble run** (results referenced in the final report):
@@ -88,7 +127,7 @@ python -m experiments.run_cnn_lstm --fetch-dataset
 **Exact command:**
 
 ```bash
-python -m experiments.run_cnn_lstm --fetch-dataset --epochs 90 --patience 24 --split-seed 42 --ensemble-train-seeds "42,5,98" --batch-size 748 --lr 9e-4 --vocab-size 12288 --no-live-plot
+python -m experiments.run_cnn_lstm --epochs 90 --patience 24 --split-seed 42 --ensemble-train-seeds "42,5,98" --batch-size 748 --lr 9e-4 --vocab-size 12288 --no-live-plot
 ```
 
 Same stratified split (`--split-seed 42`); ensemble members use training seeds `42`, `5`, and `98`. `--no-live-plot` disables the optional live plotting hook (TensorBoard event files may still be written unless you also pass `--no-tensorboard-server`; see `--help`).
@@ -107,7 +146,7 @@ Use `python -m experiments.run_cnn_lstm --help` for all flags (batch size, LR sc
 ### 2. Run sparse baselines only
 
 ```bash
-python -m experiments.run_baselines --fetch-dataset --seed 42
+python -m experiments.run_baselines --seed 42
 ```
 
 Trains **four feature families × two linear classifiers** (BoW, TF–IDF, char wb \(n\)-grams, word \(n\)-grams; LogisticRegression + LinearSVC). Metrics merge into `results/metrics.json`.
@@ -115,7 +154,7 @@ Trains **four feature families × two linear classifiers** (BoW, TF–IDF, char 
 ### 3. Evaluate a saved bundle
 
 ```bash
-python -m experiments.load_cnn_checkpoint --promoted-best --eval --fetch-dataset
+python -m experiments.load_cnn_checkpoint --promoted-best --eval
 ```
 
 Loads `artifacts/best_model_bundle/` (or `--artifact artifacts/runs/<run_dir>` for a specific run) and reports train/validation/test metrics on the same stratified split recorded in `training.json`.
@@ -179,7 +218,9 @@ Sparse baselines share the same cleaned text and stratified splits but use sklea
 │   ├── make_report_figures.py    # Confusion matrix, per-class F1, training curves
 │   └── make_explainability_figure.py  # LIME token attributions
 ├── tests/                  # pytest + hypothesis property tests
-├── data/                   # Dataset fetch helpers (CSV not committed)
+├── data/
+│   ├── fetch_dataset.py    # Download AuthorIdentification (run this first)
+│   └── README.md           # Dataset format and fetch options
 ├── report/                 # Final report: acl_latex.pdf + LaTeX source + figures
 ├── docs/figures/           # Result graphs used in this README
 ├── artifacts/              # best_model_bundle/ ships a trained checkpoint; runs/ generated at runtime
@@ -212,13 +253,11 @@ python -m pytest tests/test_pipeline.py -v
 
 ## GPU notes
 
-Training auto-selects batch size and DataLoader workers from available hardware (`src/training_hardware.py`). For CUDA, install a **GPU build** of PyTorch from [pytorch.org](https://pytorch.org/get-started/locally/). Training uses mixed precision when supported; disable with `--no-amp`.
+Training auto-selects batch size and DataLoader workers from available hardware (`src/training_hardware.py`). CUDA setup is in [GPU / CUDA PyTorch](#gpu--cuda-pytorch-required-for-neural-training) above. Training uses mixed precision when supported; disable with `--no-amp`.
 
-Verify CUDA:
+The reported ensemble command used a large GPU (batch size 748). On a laptop GPU (~12 GiB), omit `--batch-size` or use a smaller value (e.g. 128–256) to avoid out-of-memory errors.
 
-```bash
-python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
-```
+**Windows:** training defaults to **`num_workers=0`** (via `training_hardware.suggest_num_workers`) so post-ensemble fine-tune and long runs do not spawn SciPy-heavy worker processes. Override with `--num-workers N` only if you accept the stability risk.
 
 ---
 

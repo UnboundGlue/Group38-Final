@@ -66,6 +66,33 @@ logger = logging.getLogger(__name__)
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
+def _warn_if_not_using_project_venv() -> None:
+    """Warn when ``.venv`` exists but the active ``python`` is not that interpreter."""
+    root = _project_root()
+    venv_py = (
+        root / ".venv" / "Scripts" / "python.exe"
+        if sys.platform == "win32"
+        else root / ".venv" / "bin" / "python"
+    )
+    if not venv_py.is_file():
+        return
+    try:
+        if Path(sys.executable).resolve() == venv_py.resolve():
+            return
+    except OSError:
+        return
+    logger.warning(
+        "Interpreter is %s but project venv is %s. Activate .venv first "
+        "(PowerShell: .\\.venv\\Scripts\\Activate.ps1) or you may get CPU-only PyTorch.",
+        sys.executable,
+        venv_py,
+    )
+
+
 def _set_seed(seed: int) -> None:
     """Set Python, NumPy, and PyTorch seeds."""
     os.environ["PYTHONHASHSEED"] = str(seed)
@@ -505,6 +532,8 @@ def run(args: argparse.Namespace) -> dict:
         " (+ ensemble headline if |seeds|>1)" if len(train_seeds) > 1 else "",
     )
 
+    _warn_if_not_using_project_venv()
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     _configure_cudnn_for_device(device)
 
@@ -536,9 +565,8 @@ def run(args: argparse.Namespace) -> dict:
         "Training IO: batch_size=%d, num_workers=%d, pin_memory=%s",
         args.batch_size, args.num_workers, pin_memory,
     )
-    # Eval/split metrics loaders: keep ``num_workers=0``. On Windows, ``spawn`` workers
-    # re-import this script (and SciPy/OpenBLAS DLLs) per process; after long CUDA runs
-    # that can trigger ``paging file is too small`` / worker exit during ensemble eval.
+    # Eval loaders always use 0 workers. Training default comes from
+    # :func:`training_hardware.suggest_num_workers` (0 on Windows, capped on Linux/macOS).
     eval_num_workers = 0
     if len(train_seeds) > 1:
         n_ms = len(train_seeds)

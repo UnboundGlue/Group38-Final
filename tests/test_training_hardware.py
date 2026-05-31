@@ -53,3 +53,18 @@ def test_free_vram_headroom_scales_up(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_suggest_num_workers_is_non_negative() -> None:
     n = training_hardware.suggest_num_workers()
     assert 0 <= n <= 8
+
+
+def test_suggest_num_workers_windows_is_zero(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(training_hardware.sys, "platform", "win32")
+    assert training_hardware.suggest_num_workers() == 0
+
+
+def test_suggest_num_workers_linux_capped(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(training_hardware.sys, "platform", "linux")
+    monkeypatch.setattr(training_hardware.os, "cpu_count", lambda: 16)
+    assert training_hardware.suggest_num_workers() == 8
